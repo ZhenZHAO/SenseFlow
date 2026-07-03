@@ -1,0 +1,85 @@
+log_path: ./results
+flag_return_losses: True
+
+pq_len: &pq_len 231
+pv_len: &pv_len 68
+slack_len: &slack_len 1
+mask_num: &mask_num 0
+batch_size: &batch_size 64
+
+
+data:
+  meta: 
+    node: ['PQ', 'PV', 'Slack']
+    edge:
+    - ['PQ', 'default', 'PQ']
+    - ['PQ', 'default', 'PV']
+    - ['PQ', 'default', 'Slack']
+    - ['PV', 'default', 'PQ']
+    - ['PV', 'default', 'PV']
+    - ['PV', 'default', 'Slack']
+    - ['Slack', 'default', 'PQ']
+    - ['Slack', 'default', 'PV']
+  train:
+    dataset_type: PowerFlowDataset
+    data_root: /
+    split_txt: <path-to-file>.json
+    pq_len: *pq_len
+    pv_len: *pv_len
+    slack_len: *slack_len
+    mask_num: *mask_num
+  val:
+    dataset_type: PowerFlowDataset
+    data_root: /
+    split_txt: <path-to-file>.json
+    pq_len: *pq_len
+    pv_len: *pv_len
+    slack_len: *slack_len
+    mask_num: *mask_num
+  batch_size: *batch_size
+  batch_size_test: *batch_size
+  num_workers: 4
+
+train:
+  logs_freq: 10
+  epochs: 100
+  optimizer_type: "Adam"
+  learning_rate: 0.001
+  momentum: 0.9
+  weight_decay: 0.0
+
+
+model:
+  type: senseflow
+  hidden_channels: 256
+  num_block: 4
+  layers_per_graph: 2
+  heads_ca: 8
+  batch_size: *batch_size
+  flag_use_edge_feat: False
+  with_norm: True
+  num_loops_train: 8
+  num_loops_test: -1
+  scaling_factor_vm: 0.01
+  scaling_factor_va: 0.01
+  loss_type: l1
+  flag_weighted_loss: True
+  loss_weight_equ: 0.1
+  loss_weight_vm: 10.0
+  loss_weight_va: 1.0
+  matrix: vm_va
+  resume_ckpt_path: ""
+  flag_use_ema: True
+  ema_warmup_epoch: 10
+  ema_decay_param: 0.99
+
+
+scheduler:
+  type: Cosine
+  eta_min: 1e-5
+
+
+loss:
+  type: bi_deltapq_loss
+  filt_type: True
+  aggr: abs
