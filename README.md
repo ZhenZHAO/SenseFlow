@@ -1,8 +1,6 @@
 # SenseFlow
 
-## A Physics-Informed and Self-Ensembling Iterative Framework for Power Flow Estimation
-
-**[CIKM 2026]**
+## [CIKM 2026] A Physics-Informed and Self-Ensembling Iterative Framework for Power Flow Estimation
 
 Zhen Zhao · Wenqi Huang · Zicheng Wang · Jiaxuan Hou · Peng Li · Lei Bai
 
